@@ -1,0 +1,106 @@
+# GENAI Citation: Used to setup yaml file for build, image, volume, networks.
+version: "3.8"
+
+services:
+  python:
+    build: ./docker/python
+    image: code-executor-python
+    container_name: code-executor-python
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - executor-net
+
+  javascript:
+    build: ./docker/javascript
+    image: code-executor-javascript
+    container_name: code-executor-javascript
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - executor-net
+
+  ruby:
+    build: ./docker/ruby
+    image: code-executor-ruby
+    container_name: code-executor-ruby
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - executor-net
+
+  go:
+    build: ./docker/go
+    image: code-executor-go
+    container_name: code-executor-go
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - executor-net
+
+  php:
+    build: ./docker/php
+    image: code-executor-php
+    container_name: code-executor-php
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - executor-net
+
+  rust:
+    build: ./docker/rust
+    image: code-executor-rust
+    container_name: code-executor-rust
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - executor-net
+
+  swift:
+    build: ./docker/swift
+    image: code-executor-swift
+    container_name: code-executor-swift
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - executor-net
+
+  kotlin:
+    build: ./docker/kotlin
+    image: code-executor-kotlin
+    container_name: code-executor-kotlin
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - executor-net
+
+  java:
+    build: ./docker/java
+    image: code-executor-java
+    container_name: code-executor-java
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - executor-net
+
+  c:
+    build: ./docker/c
+    image: code-executor-c
+    container_name: code-executor-c
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - executor-net
+
+  cpp:
+    build: ./docker/cpp
+    image: code-executor-cpp
+    container_name: code-executor-cpp
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - executor-net
+
+networks:
+  executor-net:
+    driver: bridge

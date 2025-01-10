@@ -1,0 +1,118 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// GENAI Citation: Used to ensure correct relational database connections w/ relational key.
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id             Int      @id @default(autoincrement())
+  username       String   @unique
+  password       String
+  firstName      String
+  lastName       String
+  email          String   @unique
+  profilePicture String?
+  phoneNumber    String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  role           String
+
+  blogs             Blog[]         @relation("UserBlogs")
+  codes             CodeTemplate[] @relation("UserCodeTemplates")
+  comments          Comment[]      @relation("UserComments")
+  upvotedComments   Comment[]      @relation("UpvotedComments")
+  downvotedComments Comment[]      @relation("DownvotedComments")
+  upvotedBlogs      Blog[]         @relation("UpvotedBlogs")
+  downvotedBlogs    Blog[]         @relation("DownvotedBlogs")
+}
+
+model Blog {
+  id          Int       @id @default(autoincrement())
+  authorId    Int
+  title       String    @unique
+  description String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  upvotes     Int       @default(0)
+  downvotes   Int       @default(0)
+  totalVotes  Int       @default(0)
+  hidden      Boolean   @default(false)
+  comments    Comment[] @relation("BlogComments")
+
+  codes      CodeTemplate[] @relation("BlogCodeTemplates")
+  tags       Tag[]          @relation("BlogTags")
+  author     User           @relation("UserBlogs", fields: [authorId], references: [id])
+  upvoters   User[]         @relation("UpvotedBlogs")
+  downvoters User[]         @relation("DownvotedBlogs")
+}
+
+model CodeTemplate {
+  id          Int      @id @default(autoincrement())
+  authorId    Int
+  title       String
+  explanation String
+  content     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  language    String
+  input       String   @default("")
+
+  blogs  Blog[] @relation("BlogCodeTemplates")
+  author User   @relation("UserCodeTemplates", fields: [authorId], references: [id])
+  tags   Tag[]  @relation("CodeTemplateTags")
+
+  parentId       Int?
+  parent         CodeTemplate?  @relation("CodeTemplateForks", fields: [parentId], references: [id])
+  forkedChildren CodeTemplate[] @relation("CodeTemplateForks")
+
+  @@index([parentId])
+}
+
+model Tag {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  blogs         Blog[]         @relation("BlogTags")
+  codeTemplates CodeTemplate[] @relation("CodeTemplateTags")
+}
+
+model Comment {
+  id        Int       @id @default(autoincrement())
+  parentId  Int?
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies   Comment[] @relation("CommentReplies")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  upvotes   Int       @default(0)
+  downvotes Int       @default(0)
+  content   String
+  authorId  Int
+  blogId    Int
+  hidden    Boolean   @default(false)
+
+  author     User   @relation("UserComments", fields: [authorId], references: [id])
+  blog       Blog   @relation("BlogComments", fields: [blogId], references: [id])
+  upvoters   User[] @relation("UpvotedComments")
+  downvoters User[] @relation("DownvotedComments")
+}
+
+model Report {
+  id          Int    @id @default(autoincrement())
+  explanation String
+  parentId    Int
+  parentType  String
+
+  @@index([parentId, parentType])
+}
